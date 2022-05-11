@@ -4,7 +4,7 @@ on:
   # only manual deployments
   workflow_dispatch:
     branches:
-      - master
+      - main
 
 env:
   AWS_REGION: ap-south-1
