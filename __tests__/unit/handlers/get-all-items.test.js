@@ -35,7 +35,7 @@ describe('Test getAllItemsHandler', () => {
         const result = await lambda.getAllItemsHandler(event); 
  
         const expectedResult = { 
-            statusCode: 404, 
+            statusCode: 200, 
             body: JSON.stringify(items) 
         }; 
  
