@@ -1,0 +1,64 @@
+name: Deploy To DEV
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  AWS_REGION: ap-south-1
+  STAGE: dev
+
+jobs:  
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          check-latest: true
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Tests
+        run: npm test
+
+  deploy:
+    name: deploy
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          check-latest: true
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm install
+      - name: cleanup test files
+        run: rm -rf ./__tests__
+      - name: npm prune
+        run: npm prune --production
+      - name: Setup sam action
+        uses: aws-actions/setup-sam@v1
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Sam Build
+        run: sam build --use-container
+      - name: Sam Deploy
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-cicd-demo-${{ env.STAGE }} --s3-bucket sam-cicd-demo-bucket-${{ env.STAGE }} --capabilities CAPABILITY_IAM --region ${{ env.AWS_REGION }}
