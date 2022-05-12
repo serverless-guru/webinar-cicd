@@ -144,7 +144,7 @@ export default function createProdStack(scope: Construct, props: CodepipelineCdk
   });
 
   const buildProdAction = new CodeBuildAction({
-    actionName: 'BuildProd',
+    actionName: 'DeplyProd',
     input: sourceProdOutput,
     project: deployProd
   });
