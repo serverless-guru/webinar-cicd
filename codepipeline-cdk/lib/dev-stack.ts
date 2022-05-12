@@ -2,7 +2,7 @@ import { Construct } from "constructs";
 import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction, GitHubTrigger, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { SecretValue } from "aws-cdk-lib";
-import { Project, BuildSpec } from 'aws-cdk-lib/aws-codebuild';
+import { Project, BuildSpec, LinuxBuildImage } from 'aws-cdk-lib/aws-codebuild';
 import { CodepipelineCdkStackProps } from "../bin/codepipeline-cdk";
 
 export default function createDevStack(scope: Construct, props: CodepipelineCdkStackProps) {
@@ -42,6 +42,9 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
   });
 
   const testDev = new Project(scope, 'CodeBuildTestDevProject', {
+    environment: {
+      buildImage: LinuxBuildImage.STANDARD_5_0,
+    },
     buildSpec: BuildSpec.fromObject({
       "version": 0.2,
       "phases": {
@@ -76,6 +79,9 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
   });
 
   const deployDev = new Project(scope, 'CodeBuildDevProject', {
+    environment: {
+      buildImage: LinuxBuildImage.STANDARD_5_0,
+    },
     buildSpec: BuildSpec.fromObject({
       "version": 0.2,
       "phases": {

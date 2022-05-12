@@ -2,7 +2,7 @@ import { Construct } from "constructs";
 import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction, GitHubTrigger, CodeBuildAction, ManualApprovalAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { SecretValue } from "aws-cdk-lib";
-import { Project, BuildSpec } from 'aws-cdk-lib/aws-codebuild';
+import { Project, BuildSpec, LinuxBuildImage } from 'aws-cdk-lib/aws-codebuild';
 import { Role } from "aws-cdk-lib/aws-iam";
 import { CodepipelineCdkStackProps } from "../bin/codepipeline-cdk";
 
@@ -54,6 +54,9 @@ export default function createProdStack(scope: Construct, props: CodepipelineCdk
   });
   
   const testProd = new Project(scope, 'CodeBuildTestProdProject', {
+    environment: {
+      buildImage: LinuxBuildImage.STANDARD_5_0,
+    },
     buildSpec: BuildSpec.fromObject({
       "version": 0.2,
       "phases": {
