@@ -29,8 +29,6 @@ Resources:
     Properties:
       Handler: src/handlers/get-all-items.getAllItemsHandler
       Runtime: nodejs14.x
-      Architectures:
-        - x86_64
       MemorySize: 128
       Timeout: 100
       Description: A simple example includes a HTTP get method to get all items from a DynamoDB table.
@@ -57,8 +55,6 @@ Resources:
     Properties:
       Handler: src/handlers/get-by-id.getByIdHandler
       Runtime: nodejs14.x
-      Architectures:
-        - x86_64
       MemorySize: 128
       Timeout: 100
       Description: A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
@@ -85,8 +81,6 @@ Resources:
     Properties:
       Handler: src/handlers/put-item.putItemHandler
       Runtime: nodejs14.x
-      Architectures:
-        - x86_64
       MemorySize: 128
       Timeout: 100
       Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
