@@ -6,6 +6,7 @@ import { StackProps } from 'aws-cdk-lib';
 export interface CodepipelineCdkStackProps extends StackProps {
   stage: string;
 }
+
 const app = new cdk.App();
 
 new CodepipelineCdkStack(app, 'CodepipelineCdkStackDev', {

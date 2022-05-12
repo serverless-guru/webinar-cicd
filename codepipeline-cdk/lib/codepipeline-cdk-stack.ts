@@ -1,9 +1,8 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodepipelineCdkStackProps } from '../bin/codepipeline-cdk';
 import createDevStack from './dev-stack';
 import createProdStack from './prod-stack';
-
 export class CodepipelineCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: CodepipelineCdkStackProps) {
     super(scope, id, props);

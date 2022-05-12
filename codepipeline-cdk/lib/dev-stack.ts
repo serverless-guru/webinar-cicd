@@ -1,12 +1,26 @@
 import { Construct } from "constructs";
 import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction, GitHubTrigger, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
-import { SecretValue } from "aws-cdk-lib";
+import { SecretValue, RemovalPolicy } from "aws-cdk-lib";
 import { Project, BuildSpec, LinuxBuildImage } from 'aws-cdk-lib/aws-codebuild';
 import { CodepipelineCdkStackProps } from "../bin/codepipeline-cdk";
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export default function createDevStack(scope: Construct, props: CodepipelineCdkStackProps) {
   
+  const bucketName = 'sam-cicd-demo-bucket-be60f114-0e5d-4361-a7f4-e32faac185fc';
+  new Bucket(scope, 'DeploymentBucket', {
+    bucketName,
+    publicReadAccess: false,
+    removalPolicy: RemovalPolicy.DESTROY,
+    blockPublicAccess: {
+      restrictPublicBuckets: true,
+      blockPublicAcls: true,
+      ignorePublicAcls: true,
+      blockPublicPolicy: true
+    }
+  });
+
   const pipeline = new Pipeline(scope, 'SamDevPipeline', {
     pipelineName: 'deploy-sam-application-dev',
   });
@@ -101,10 +115,10 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
           "commands": [
             "echo Build STARTED on `date`",
             "echo Building sam-app",
-            "sam build --use-container",
+            "sam build",
             "echo Build COMPLETED on `date`",
             "echo Deploying sam-app",
-            "sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-cicd-demo-dev --s3-bucket sam-cicd-demo-bucket-us-east-1-pipeline --capabilities CAPABILITY_IAM --region us-east-1"
+            `sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-cicd-demo-dev --s3-bucket ${bucketName} --capabilities CAPABILITY_IAM --region us-east-1`
           ]
         },
         "post_build": {
