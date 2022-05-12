@@ -42,6 +42,7 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
   });
 
   const testDev = new Project(scope, 'CodeBuildTestDevProject', {
+    projectName: 'CodeBuildTestDevProject',
     environment: {
       buildImage: LinuxBuildImage.STANDARD_5_0,
     },
@@ -79,6 +80,7 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
   });
 
   const deployDev = new Project(scope, 'CodeBuildDevProject', {
+    projectName: 'CodeBuildDevProject',
     environment: {
       buildImage: LinuxBuildImage.STANDARD_5_0,
     },

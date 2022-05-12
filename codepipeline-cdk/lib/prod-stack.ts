@@ -54,6 +54,7 @@ export default function createProdStack(scope: Construct, props: CodepipelineCdk
   });
   
   const testProd = new Project(scope, 'CodeBuildTestProdProject', {
+    projectName: 'CodeBuildTestProdProject',
     environment: {
       buildImage: LinuxBuildImage.STANDARD_5_0,
     },
@@ -91,6 +92,10 @@ export default function createProdStack(scope: Construct, props: CodepipelineCdk
   });
     
   const deployProd = new Project(scope, 'CodeBuildProdProject', {
+    projectName: 'CodeBuildProdProject',
+    environment: {
+      buildImage: LinuxBuildImage.STANDARD_5_0,
+    },
     buildSpec: BuildSpec.fromObject({
       "version": 0.2,
       "phases": {
