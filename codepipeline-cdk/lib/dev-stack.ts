@@ -185,14 +185,12 @@ export default function createDevStack(scope: Construct, props: CodepipelineCdkS
     `arn:aws:iam::${props?.env?.account}:role/sam-cicd-demo-*`
   );
 
-  
   deployDev.addToRolePolicy(deployPolicy);
   const buildDevAction = new CodeBuildAction({
     actionName: 'DeployDev',
     input: sourceDevOutput,
     project: deployDev
   });
-
 
   sourceStage.addAction(sourceDevAction);
   testDevStage.addAction(testDevAction);

@@ -3,7 +3,7 @@ import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction, GitHubTrigger, CodeBuildAction, ManualApprovalAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { SecretValue, RemovalPolicy } from "aws-cdk-lib";
 import { Project, BuildSpec, LinuxBuildImage } from 'aws-cdk-lib/aws-codebuild';
-import { Role } from "aws-cdk-lib/aws-iam";
+import { Role, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { CodepipelineCdkStackProps } from "../bin/codepipeline-cdk";
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -143,8 +143,63 @@ export default function createProdStack(scope: Construct, props: CodepipelineCdk
     })
   });
 
+  const deployPolicy = new PolicyStatement();
+  deployPolicy.addActions(
+    "cloudformation:GetTemplate",
+    "cloudformation:CreateChangeSet",
+    "cloudformation:DescribeChangeSet",
+    "cloudformation:ExecuteChangeSet",
+    "cloudformation:DescribeStackEvents",
+    "cloudformation:DeleteChangeSet",
+    "cloudformation:DescribeStacks",
+    "cloudformation:GetTemplateSummary",
+    "s3:*Object",
+    "s3:ListBucket",
+    "s3:getBucketLocation",
+    "lambda:UpdateFunctionCode",
+    "lambda:GetFunction",
+    "lambda:CreateFunction",
+    "lambda:DeleteFunction",
+    "lambda:GetFunctionConfiguration",
+    "lambda:AddPermission",
+    "lambda:RemovePermission",
+    "dynamodb:CreateTable",
+    "dynamodb:UpdateTable",
+    "dynamodb:DescribeTable",
+    "dynamodb:DeleteTable",
+    "apigateway:GET",
+    "apigateway:DELETE",
+    "apigateway:PUT",
+    "apigateway:POST",
+    "apigateway:PATCH",
+    "iam:GetRole",
+    "iam:GetRolePolicy",
+    "iam:PassRole",
+    "iam:CreateRole",
+    "iam:PutRolePolicy",
+    "iam:DeleteRole",
+    "iam:DeleteRolePolicy",
+    "iam:AttachRolePolicy",
+    "iam:DetachRolePolicy",
+    "iam:PutRolePolicy"
+  );
+
+  deployPolicy.addResources(
+    `arn:aws:s3:::${bucketName}/*`,
+    `arn:aws:s3:::${bucketName}`,
+    `arn:aws:apigateway:us-east-1::/restapis`,
+    `arn:aws:apigateway:us-east-1::/restapis/*`,
+    `arn:aws:lambda:us-east-1:${props?.env?.account}:function:sam-cicd-demo*`,
+    `arn:aws:dynamodb:us-east-1:${props?.env?.account}:table/sam-cicd-demo*`,
+    `arn:aws:cloudformation:us-east-1:${props?.env?.account}:stack/sam-cicd-demo/*`,
+    `arn:aws:cloudformation:us-east-1:${props?.env?.account}:stack/sam-cicd-demo*`,
+    `arn:aws:cloudformation:us-east-1:aws:transform/Serverless-2016-10-31`,
+    `arn:aws:iam::${props?.env?.account}:role/sam-cicd-demo-*`
+  );
+
+  deployProd.addToRolePolicy(deployPolicy);
   const buildProdAction = new CodeBuildAction({
-    actionName: 'DeplyProd',
+    actionName: 'DeployProd',
     input: sourceProdOutput,
     project: deployProd
   });
