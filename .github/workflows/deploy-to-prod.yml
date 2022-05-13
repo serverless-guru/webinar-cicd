@@ -14,8 +14,6 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    environment:
-      name: prod
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
